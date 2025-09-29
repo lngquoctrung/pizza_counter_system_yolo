@@ -13,3 +13,4 @@ models/*.pt
 .env
 .venv
 .streamlit/secrets.toml
+videos

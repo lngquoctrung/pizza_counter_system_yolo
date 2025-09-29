@@ -31,7 +31,9 @@ def show_settings():
     with col2:
         # Detection classes
         st.markdown("### Detection Classes")
-        available_classes = counter.get_available_classes()
+        
+        # Create available_classes dict since PizzaCounter doesn't have get_available_classes method
+        available_classes = {53: 'pizza'}  # COCO dataset pizza class
         current_classes = counter.classes_to_detect
         
         class_options = []
@@ -39,143 +41,103 @@ def show_settings():
             class_options.append(f"{class_name} (ID: {class_id})")
         
         selected_classes = st.multiselect(
-            "Select classes to detect",
+            "Classes to detect",
             options=class_options,
-            default=[f"{available_classes[cls]} (ID: {cls})" for cls in current_classes],
-            help="Choose which object classes to detect in videos"
+            default=[f"pizza (ID: 53)"] if 53 in current_classes else [],
+            help="Select which object classes to detect"
         )
         
         if st.button("Update Detection Classes"):
             # Extract class IDs from selected options
-            new_class_ids = []
-            for selection in selected_classes:
-                class_id = int(selection.split("ID: ")[1].rstrip(")"))
-                new_class_ids.append(class_id)
+            new_classes = []
+            for option in selected_classes:
+                class_id = int(option.split("ID: ")[1].split(")")[0])
+                new_classes.append(class_id)
             
-            counter.set_detection_classes(new_class_ids)
-            st.success("Detection classes updated successfully!")
+            counter.classes_to_detect = new_classes
+            st.success(f"Updated detection classes: {selected_classes}")
     
-    # Database Settings Section
-    st.markdown("## 🗄️ Database Configuration")
+    # Tracking Settings
+    st.markdown("## 🎯 Tracking Parameters")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        # Database connection status
-        try:
-            # Test database connection
-            stats = counter.get_comprehensive_stats()
-            st.success("✅ Database connection active")
-            
-            # Database statistics
-            st.markdown("**Database Stats:**")
-            st.write(f"- Total detections: {stats.get('total_detections', 0)}")
-            st.write(f"- Total videos: {stats.get('total_videos', 0)}")
-            st.write(f"- Feedback entries: {stats.get('feedback_count', 0)}")
-            
-        except Exception as e:
-            st.error(f"❌ Database connection error: {str(e)}")
-    
-    with col2:
-        # Database maintenance
-        st.markdown("**Database Maintenance:**")
+        tracking_threshold = st.slider(
+            "Tracking Threshold",
+            min_value=0.1,
+            max_value=1.0,
+            value=current_settings.get('tracking_threshold', 0.3),
+            step=0.05,
+            help="Minimum confidence for object tracking"
+        )
         
-        if st.button("🧹 Clean Old Data"):
-            # Add database cleanup functionality
-            st.info("Database cleanup initiated...")
-        
-        if st.button("📊 Rebuild Statistics"):
-            counter.rebuild_statistics()
-            st.success("Statistics rebuilt successfully!")
-        
-        if st.button("🔄 Reset Model Settings"):
-            counter.reset_model_settings()
-            st.success("Model settings reset to defaults!")
-    
-    # Performance Settings
-    st.markdown("## 🚀 Performance Settings")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        # Video processing settings
-        st.markdown("### Video Processing")
-        
-        max_video_size = st.number_input(
-            "Max Video Size (MB)",
+        movement_threshold = st.slider(
+            "Movement Threshold",
             min_value=10,
-            max_value=1000,
-            value=500,
-            step=10,
-            help="Maximum allowed video file size"
-        )
-        
-        processing_threads = st.slider(
-            "Processing Threads",
-            min_value=1,
-            max_value=8,
-            value=2,
-            help="Number of threads for video processing"
+            max_value=200,
+            value=int(current_settings.get('movement_threshold', 50)),
+            step=5,
+            help="Minimum movement distance to count as removed"
         )
     
     with col2:
-        # Real-time processing settings
-        st.markdown("### Real-time Processing")
-        
         frame_skip = st.slider(
-            "Frame Skip Rate",
+            "Frame Skip",
             min_value=1,
             max_value=10,
-            value=3,
-            help="Process every Nth frame for better performance"
+            value=int(current_settings.get('frame_skip', 3)),
+            step=1,
+            help="Number of frames to skip for performance"
         )
         
-        stream_quality = st.selectbox(
-            "Stream Quality",
-            ["Low (480p)", "Medium (720p)", "High (1080p)"],
-            index=1,
-            help="Quality for real-time video streaming"
-        )
+        if st.button("Update Tracking Settings"):
+            counter.tracking_threshold = tracking_threshold
+            counter.movement_threshold = movement_threshold
+            counter.frame_skip = frame_skip
+            st.success("Tracking settings updated successfully!")
     
-    # System Info Section
-    st.markdown("## 📋 System Information")
+    # System Information
+    st.markdown("## 💾 System Information")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown("**System Status:**")
-        st.write("- Application: Running ✅")
-        st.write("- YOLO Model: Loaded ✅")
-        st.write("- MongoDB: Connected ✅")
-        st.write(f"- Videos Directory: {'Exists' if os.path.exists('./videos') else 'Missing'}")
+        st.info(f"**Model Path:** ./models/yolo11n.pt")
+        st.info(f"**Database Status:** {'Connected' if counter.db_available else 'Disconnected'}")
+        st.info(f"**Pizza Class ID:** {counter.pizza_class_id}")
     
     with col2:
-        st.markdown("**Model Information:**")
-        st.write("- Model: YOLO11n")
-        st.write("- Framework: Ultralytics")
-        st.write("- Dataset: COCO")
-        st.write("- Pizza Class ID: 53")
+        st.info(f"**Current Classes:** {counter.classes_to_detect}")
+        st.info(f"**Processing Videos:** {len(counter.processing_videos)}")
+        
+        # Model info
+        try:
+            model_info = f"**Model Type:** {counter.model.__class__.__name__}"
+            st.info(model_info)
+        except:
+            st.info("**Model Type:** YOLO11n")
     
     # Export/Import Settings
-    st.markdown("## 💾 Settings Backup")
+    st.markdown("## 📤 Settings Management")
     
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("📥 Export Settings"):
+        if st.button("Export Settings"):
             settings_data = {
-                'confidence_threshold': confidence_threshold,
-                'detection_classes': current_classes,
-                'max_video_size': max_video_size,
-                'processing_threads': processing_threads,
-                'frame_skip': frame_skip,
-                'stream_quality': stream_quality
+                'confidence_threshold': counter.confidence_threshold,
+                'tracking_threshold': counter.tracking_threshold,
+                'movement_threshold': counter.movement_threshold,
+                'frame_skip': counter.frame_skip,
+                'classes_to_detect': counter.classes_to_detect,
+                'pizza_class_id': counter.pizza_class_id
             }
             
             import json
             settings_json = json.dumps(settings_data, indent=2)
             st.download_button(
-                label="Download Settings",
+                label="Download Settings JSON",
                 data=settings_json,
                 file_name="pizza_detection_settings.json",
                 mime="application/json"
@@ -185,20 +147,104 @@ def show_settings():
         uploaded_settings = st.file_uploader(
             "Import Settings",
             type=['json'],
-            help="Upload previously exported settings file"
+            help="Upload a settings JSON file"
         )
         
-        if uploaded_settings and st.button("📤 Import Settings"):
+        if uploaded_settings is not None:
             try:
                 import json
-                settings_data = json.loads(uploaded_settings.read())
+                settings_data = json.load(uploaded_settings)
                 
-                # Apply imported settings
-                counter.update_confidence_threshold(settings_data.get('confidence_threshold', 0.5))
-                counter.set_detection_classes(settings_data.get('detection_classes', [53]))
-                
-                st.success("Settings imported successfully!")
-                st.rerun()
-                
+                # Validate and apply settings
+                if all(key in settings_data for key in ['confidence_threshold', 'tracking_threshold']):
+                    counter.confidence_threshold = settings_data['confidence_threshold']
+                    counter.tracking_threshold = settings_data['tracking_threshold']
+                    counter.movement_threshold = settings_data.get('movement_threshold', 50)
+                    counter.frame_skip = settings_data.get('frame_skip', 3)
+                    counter.classes_to_detect = settings_data.get('classes_to_detect', [53])
+                    
+                    st.success("Settings imported successfully!")
+                    st.experimental_rerun()
+                else:
+                    st.error("Invalid settings file format")
             except Exception as e:
                 st.error(f"Error importing settings: {str(e)}")
+    
+    # Database Management
+    if counter.db_available:
+        st.markdown("## 🗄️ Database Management")
+        
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("Clear Detection History"):
+                if st.session_state.get('confirm_clear_detections', False):
+                    try:
+                        counter.detections_collection.delete_many({})
+                        st.success("Detection history cleared!")
+                        st.session_state.confirm_clear_detections = False
+                    except Exception as e:
+                        st.error(f"Error clearing detections: {e}")
+                else:
+                    st.session_state.confirm_clear_detections = True
+                    st.warning("Click again to confirm deletion")
+        
+        with col2:
+            if st.button("Clear Video Records"):
+                if st.session_state.get('confirm_clear_videos', False):
+                    try:
+                        counter.videos_collection.delete_many({})
+                        st.success("Video records cleared!")
+                        st.session_state.confirm_clear_videos = False
+                    except Exception as e:
+                        st.error(f"Error clearing videos: {e}")
+                else:
+                    st.session_state.confirm_clear_videos = True
+                    st.warning("Click again to confirm deletion")
+        
+        with col3:
+            if st.button("Clear All Feedback"):
+                if st.session_state.get('confirm_clear_feedback', False):
+                    try:
+                        counter.feedback_collection.delete_many({})
+                        st.success("Feedback cleared!")
+                        st.session_state.confirm_clear_feedback = False
+                    except Exception as e:
+                        st.error(f"Error clearing feedback: {e}")
+                else:
+                    st.session_state.confirm_clear_feedback = True
+                    st.warning("Click again to confirm deletion")
+        
+        # Database Stats
+        st.markdown("### Database Statistics")
+        try:
+            detection_count = counter.detections_collection.count_documents({})
+            video_count = counter.videos_collection.count_documents({})
+            feedback_count = counter.feedback_collection.count_documents({})
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total Detections", detection_count)
+            with col2:
+                st.metric("Total Videos", video_count)
+            with col3:
+                st.metric("Total Feedback", feedback_count)
+        except Exception as e:
+            st.error(f"Error getting database stats: {e}")
+    
+    # Reset to Default Settings
+    st.markdown("## ⚙️ Reset Settings")
+    if st.button("Reset to Default Settings"):
+        if st.session_state.get('confirm_reset', False):
+            counter.confidence_threshold = 0.5
+            counter.tracking_threshold = 0.3
+            counter.movement_threshold = 50
+            counter.frame_skip = 3
+            counter.classes_to_detect = [53]
+            
+            st.success("Settings reset to default values!")
+            st.session_state.confirm_reset = False
+            st.experimental_rerun()
+        else:
+            st.session_state.confirm_reset = True
+            st.warning("Click again to confirm reset")

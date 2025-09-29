@@ -15,19 +15,19 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    .reportview-container .main .block-container {
-        padding-top: 2rem;
-    }
     [data-testid="stSidebar"] {
         display: none;
     }
     .css-1d391kg {
         display: none;
     }
+    .reportview-container .main .block-container {
+        padding-top: 2rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize pizza counter
+# Initialize pizza counter ONLY ONCE
 if 'pizza_counter' not in st.session_state:
     from utils.pizza_counter import PizzaCounter
     st.session_state.pizza_counter = PizzaCounter()
@@ -35,7 +35,7 @@ if 'pizza_counter' not in st.session_state:
 # Title
 st.markdown("# 🍕 Pizza Detection Dashboard")
 
-# Horizontal Navigation Menu
+# Horizontal Navigation
 selected = option_menu(
     menu_title="Navigation",
     options=["Dashboard", "Video Library", "Analytics", "Settings"],
@@ -46,17 +46,17 @@ selected = option_menu(
         "container": {"padding": "0!important", "background-color": "rgba(0,0,0,0.1)", "border-radius": "10px"},
         "icon": {"color": "#e74c3c", "font-size": "18px"},
         "nav-link": {
-            "font-size": "16px", 
-            "text-align": "center", 
+            "font-size": "16px",
+            "text-align": "center",
             "margin": "0px",
             "padding": "12px",
             "border-radius": "8px"
         },
-        "nav-link-selected": {"background-color": "#667eea", "color": "white"},
+        "nav-link-selected": {"background-color": "#667eea", "color": "white"}
     }
 )
 
-# Page content
+# Page routing
 if selected == "Dashboard":
     from pages.dashboard import show_dashboard
     show_dashboard()

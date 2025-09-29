@@ -1,6 +1,6 @@
 import streamlit as st
 import time
-from utils.helpers import display_metric_card, format_time_ago
+from utils.helpers import display_metric_card
 
 def display_stats_cards():
     """Display system statistics cards"""

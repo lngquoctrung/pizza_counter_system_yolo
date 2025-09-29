@@ -1,79 +1,68 @@
 import streamlit as st
 import time
 from components.stats_cards import display_stats_cards
-from components.video_upload import display_video_upload, display_processing_status
+from components.video_upload import display_video_upload, display_processing_status, display_refresh_button
 from components.recent_detections import display_recent_detections
 from utils.helpers import format_time_ago
 
 def show_dashboard():
+    """Main dashboard page"""
     st.markdown("""
-    <div class="header">
-        <h1><i class="fas fa-pizza-slice"></i> Pizza Detection Dashboard</h1>
-        <div class="header-stats" id="header-stats"></div>
+    <div class="header-container">
+        <h1 class="header-title">
+            <i class="fas fa-pizza-slice"></i>
+            Pizza Detection Dashboard
+        </h1>
     </div>
     """, unsafe_allow_html=True)
     
-    # Auto-refresh placeholder
-    refresh_placeholder = st.empty()
-    
-    # Main layout
+    # Main content layout
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        st.markdown("### 📊 System Statistics")
+        # System statistics
         display_stats_cards()
         
-        st.markdown("### 📤 Upload Video")
+        # Video upload section
         display_video_upload()
         
-        # Hiển thị trạng thái processing nếu có
+        # Active processing status (if any)
         display_processing_status()
-        
+    
     with col2:
-        st.markdown("### 🔍 Recent Detections")
+        # Refresh button - separate from upload section
+        st.markdown("### 🔄 Data Controls")
+        display_refresh_button()
+        
+        st.markdown("---")
+        
+        # Recent detections
         display_recent_detections()
-        
-        st.markdown("### ⚙️ Quick Settings")
-        display_quick_settings()
     
-    # Auto-refresh mechanism
-    if st.button("🔄 Refresh Data", key="refresh_dashboard"):
-        st.rerun()
-    
-    # Periodic auto-refresh (every 30 seconds)
-    time.sleep(30)
-    st.rerun()
-
-def display_quick_settings():
-    counter = st.session_state.pizza_counter
-    
-    # Confidence threshold slider
-    current_threshold = counter.get_model_settings().get('confidence_threshold', 0.5)
-    
-    new_threshold = st.slider(
-        "Confidence Threshold",
-        min_value=0.1,
-        max_value=1.0,
-        value=current_threshold,
-        step=0.05,
-        key="confidence_slider"
-    )
-    
-    if new_threshold != current_threshold:
-        counter.update_confidence_threshold(new_threshold)
-        st.success(f"Threshold updated to {new_threshold}")
-        
-    # Model accuracy display
-    stats = counter.get_comprehensive_stats()
-    accuracy = stats.get('accuracy_percentage', 0)
-    
-    st.metric(
-        label="Model Accuracy",
-        value=f"{accuracy}%",
-        delta=None
-    )
-    
-    # Processing status
-    processing_videos = stats.get('processing_videos', 0)
-    if processing_videos > 0:
-        st.info(f"⏳ {processing_videos} videos currently processing...")
+    # Custom CSS for better spacing
+    st.markdown("""
+    <style>
+    .main > div {
+        padding-top: 1rem;
+    }
+    .header-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 20px 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .header-title {
+        color: #2c3e50;
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 0;
+    }
+    .header-title i {
+        color: #e74c3c;
+        margin-right: 10px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
