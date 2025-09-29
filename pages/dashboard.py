@@ -53,13 +53,13 @@ def show_dashboard():
         margin-bottom: 30px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
+        color: black !important;
     }
     .header-title {
         color: #2c3e50;
         font-size: 2.2rem;
         font-weight: 700;
         margin-bottom: 0;
-        color: black !important;
     }
     .header-title i {
         color: #e74c3c;
