@@ -12,6 +12,30 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
+st.markdown("""
+<style>
+    [data-testid="stSidebar"] {
+        display: none !important;
+    }
+    
+    .css-1d391kg {
+        display: none !important;
+    }
+    
+    section[data-testid="stSidebar"] {
+        display: none !important;
+    }
+    
+    .css-1lcbmhc {
+        display: none !important;
+    }
+    
+    div[data-testid="collapsedControl"] {
+        display: none !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 if 'pizza_counter' not in st.session_state:
     from utils.pizza_counter import PizzaCounter
     st.session_state.pizza_counter = PizzaCounter()
