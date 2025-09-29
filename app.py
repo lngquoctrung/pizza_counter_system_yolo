@@ -12,39 +12,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-st.markdown("""
-<style>
-    .stApp {
-        background: #1a1a2e !important;
-        min-height: 100vh;
-    }
-    
-    [data-testid="stSidebar"] {
-        display: none !important;
-    }
-    
-    .css-1d391kg {
-        display: none !important;
-    }
-    
-    .reportview-container .main .block-container {
-        padding-top: 2rem;
-    }
-    
-    .stApp, .stApp *, div, p, span, h1, h2, h3 {
-        color: #ffffff !important;
-    }
-    
-    div[data-testid="stMarkdownContainer"] {
-        color: #ffffff !important;
-    }
-    
-    div[data-testid="stMarkdownContainer"] h1 {
-        color: #ffffff !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
 if 'pizza_counter' not in st.session_state:
     from utils.pizza_counter import PizzaCounter
     st.session_state.pizza_counter = PizzaCounter()
