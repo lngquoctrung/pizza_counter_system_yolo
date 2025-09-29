@@ -5,7 +5,6 @@ import os
 
 load_dotenv()
 
-# Page config
 st.set_page_config(
     page_title="Pizza Detection System",
     page_icon="🍕",
@@ -16,7 +15,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        background: #1a1a1a !important;
         min-height: 100vh;
     }
     
@@ -36,34 +35,18 @@ st.markdown("""
         color: #ffffff !important;
     }
     
-    html[data-theme="light"] .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    }
-    
-    html[data-theme="dark"] .stApp {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    }
-    
-    .nav-link {
+    div[data-testid="stMarkdownContainer"] h1 {
         color: #ffffff !important;
-    }
-    
-    .nav-link-selected {
-        background-color: #667eea !important;
-        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize pizza counter ONLY ONCE
 if 'pizza_counter' not in st.session_state:
     from utils.pizza_counter import PizzaCounter
     st.session_state.pizza_counter = PizzaCounter()
 
-# Title
-st.markdown('<h1 style="color: #ffffff !important;">🍕 Pizza Detection Dashboard</h1>', unsafe_allow_html=True)
+st.markdown("# 🍕 Pizza Detection Dashboard")
 
-# Horizontal Navigation
 selected = option_menu(
     menu_title="Navigation",
     options=["Dashboard", "Video Library", "Analytics", "Settings"],
@@ -85,7 +68,6 @@ selected = option_menu(
     }
 )
 
-# Page routing
 if selected == "Dashboard":
     from pages.dashboard import show_dashboard
     show_dashboard()
