@@ -15,7 +15,7 @@ st.set_page_config(
 st.markdown("""
 <style>
     .stApp {
-        background: #1a1a1a !important;
+        background: #1a1a2e !important;
         min-height: 100vh;
     }
     
@@ -31,7 +31,11 @@ st.markdown("""
         padding-top: 2rem;
     }
     
-    .stApp, .stApp * {
+    .stApp, .stApp *, div, p, span, h1, h2, h3 {
+        color: #ffffff !important;
+    }
+    
+    div[data-testid="stMarkdownContainer"] {
         color: #ffffff !important;
     }
     
@@ -54,7 +58,7 @@ selected = option_menu(
     default_index=0,
     orientation="horizontal",
     styles={
-        "container": {"padding": "0!important", "background-color": "rgba(0,0,0,0.3)", "border-radius": "10px"},
+        "container": {"padding": "0!important", "background-color": "#0e1117", "border-radius": "10px"},
         "icon": {"color": "#e74c3c", "font-size": "18px"},
         "nav-link": {
             "font-size": "16px",

@@ -9,12 +9,11 @@ def show_dashboard():
     st.markdown("""
     <style>
     .header-container {
-        background: rgba(30, 30, 30, 0.95) !important;
-        backdrop-filter: blur(10px);
+        background: #0e1117 !important;
         border-radius: 15px;
         padding: 20px 30px;
         margin-bottom: 30px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
@@ -31,12 +30,12 @@ def show_dashboard():
     }
     
     .metric-card {
-        background: rgba(30, 30, 30, 0.9) !important;
+        background: #0e1117 !important;
         color: #ffffff !important;
         border-radius: 15px;
         padding: 20px;
         margin: 10px 0;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
     }
     
@@ -48,7 +47,7 @@ def show_dashboard():
     }
     
     [data-testid="metric-container"] {
-        background: rgba(30, 30, 30, 0.8) !important;
+        background: #0e1117 !important;
         border-radius: 10px !important;
         padding: 15px !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -57,14 +56,30 @@ def show_dashboard():
     [data-testid="metric-container"] > div {
         color: #ffffff !important;
     }
+    
+    [data-testid="metric-container"] > div > div {
+        color: #ffffff !important;
+    }
+    
+    div[data-testid="stMarkdownContainer"] {
+        color: #ffffff !important;
+    }
+    
+    div[data-testid="stMarkdownContainer"] p {
+        color: #ffffff !important;
+    }
+    
+    .stInfo {
+        background: rgba(52, 152, 219, 0.2) !important;
+        color: #ffffff !important;
+    }
     </style>
     """, unsafe_allow_html=True)
     
     st.markdown("""
     <div class="header-container">
         <h1 class="header-title">
-            <i class="fas fa-pizza-slice"></i>
-            Pizza Detection Dashboard
+            🍕 Pizza Detection Dashboard
         </h1>
     </div>
     """, unsafe_allow_html=True)
