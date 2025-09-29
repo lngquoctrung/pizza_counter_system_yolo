@@ -59,6 +59,7 @@ def show_dashboard():
         font-size: 2.2rem;
         font-weight: 700;
         margin-bottom: 0;
+        color: black !important;
     }
     .header-title i {
         color: #e74c3c;

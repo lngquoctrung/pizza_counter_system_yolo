@@ -110,7 +110,7 @@ docker-compose up -d --build
 3. **Access the application**: 
    - Open [http://localhost:8501](http://localhost:8501)
    - Dashboard will load automatically
-   - Deployed application will be available at [http://localhost:8501/app](http://localhost:8501/app)
+   - Deployed application will be available at [https://pizza-counter-system-qctrung.streamlit.app/](https://pizza-counter-system-qctrung.streamlit.app/)
 
 ### Manual Installation
 
