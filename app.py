@@ -15,14 +15,42 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        min-height: 100vh;
+    }
+    
     [data-testid="stSidebar"] {
-        display: none;
+        display: none !important;
     }
+    
     .css-1d391kg {
-        display: none;
+        display: none !important;
     }
+    
     .reportview-container .main .block-container {
         padding-top: 2rem;
+    }
+    
+    .stApp, .stApp * {
+        color: #ffffff !important;
+    }
+    
+    html[data-theme="light"] .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    html[data-theme="dark"] .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+    
+    .nav-link {
+        color: #ffffff !important;
+    }
+    
+    .nav-link-selected {
+        background-color: #667eea !important;
+        color: white !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -33,7 +61,7 @@ if 'pizza_counter' not in st.session_state:
     st.session_state.pizza_counter = PizzaCounter()
 
 # Title
-st.markdown("# 🍕 Pizza Detection Dashboard")
+st.markdown('<h1 style="color: #ffffff !important;">🍕 Pizza Detection Dashboard</h1>', unsafe_allow_html=True)
 
 # Horizontal Navigation
 selected = option_menu(
@@ -43,14 +71,15 @@ selected = option_menu(
     default_index=0,
     orientation="horizontal",
     styles={
-        "container": {"padding": "0!important", "background-color": "rgba(0,0,0,0.1)", "border-radius": "10px"},
+        "container": {"padding": "0!important", "background-color": "rgba(0,0,0,0.3)", "border-radius": "10px"},
         "icon": {"color": "#e74c3c", "font-size": "18px"},
         "nav-link": {
             "font-size": "16px",
             "text-align": "center",
             "margin": "0px",
             "padding": "12px",
-            "border-radius": "8px"
+            "border-radius": "8px",
+            "color": "#ffffff"
         },
         "nav-link-selected": {"background-color": "#667eea", "color": "white"}
     }
