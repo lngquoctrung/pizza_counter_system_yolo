@@ -46,14 +46,13 @@ def show_dashboard():
         padding-top: 1rem;
     }
     .header-container {
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(0, 0, 0, 0.95);
         backdrop-filter: blur(10px);
         border-radius: 15px;
         padding: 20px 30px;
         margin-bottom: 30px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         border: 1px solid rgba(255, 255, 255, 0.2);
-        color: black !important;
     }
     .header-title {
         color: #2c3e50;
