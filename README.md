@@ -110,6 +110,7 @@ docker-compose up -d --build
 3. **Access the application**: 
    - Open [http://localhost:8501](http://localhost:8501)
    - Dashboard will load automatically
+   - Deployed application will be available at [http://localhost:8501/app](http://localhost:8501/app)
 
 ### Manual Installation
 
@@ -142,7 +143,7 @@ docker-compose up -d --build
 
 5. **Create required directories**:
    ```bash
-   mkdir -p models videos thumbnails
+   mkdir -p models videos
    ```
 
 6. **Download YOLO11 model** (automatic on first run):
@@ -332,22 +333,6 @@ counter.get_model_settings()
 * **Detection Accuracy**: 85-95% (with proper feedback)
 * **Memory Usage**: 2-4GB RAM during processing
 * **Disk Usage**: ~2-3x video file size for thumbnails and metadata
-
-## 🆕 Version History
-
-### v2.0.0 (Current) - September 2025
-* **New**: Streamlit-based modern UI
-* **New**: Real-time detection streaming
-* **New**: Advanced tracking algorithm
-* **New**: Comprehensive analytics dashboard
-* **New**: MongoDB integration
-* **Improved**: Better video processing pipeline
-* **Improved**: Enhanced user experience
-
-### v1.0.0 - June 2025
-* Initial Flask-based implementation
-* Basic pizza detection functionality
-* Simple web interface
 
 ## 👨‍💻 Support & Contact
 
