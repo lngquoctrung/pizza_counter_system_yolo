@@ -1,6 +1,8 @@
-.venv
-.idea
-**/__pycache__
-.env
-videos
+__pycache__/
+*.py[cod]
+.git/
+.vscode/
 models
+.env
+.venv
+.streamlit/secrets.toml

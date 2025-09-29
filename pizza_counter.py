@@ -12,6 +12,11 @@ load_dotenv()
 class PizzaCounter:
     def __init__(self, model_path="./models/yolo11n.pt", mongodb_uri=os.getenv("MONGODB_URI")):
         """Initialize pizza counter with YOLO model and MongoDB connection"""
+        if model_path is None:
+            # Download model at runtime
+            model_path = "./models/yolo11n.pt"
+            if not os.path.exists(model_path):
+                print("Downloading YOLO model...")
         self.model = YOLO(model_path)
         
         # COCO dataset class IDs - pizza is class 53
