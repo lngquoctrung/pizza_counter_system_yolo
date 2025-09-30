@@ -119,14 +119,12 @@ class PizzaCounter:
         except Exception as e:
             print(f"Error loading settings: {e}")
         
-        # Default values nếu không load được từ DB
         self.confidence_threshold = 0.5
         self.tracking_threshold = 0.3
         self.movement_threshold = 50
         self.frame_skip = 3
 
     def process_video(self, video_path, filename, progress_callback=None):
-        """Process video với thuật toán GỐC - CHÍNH XÁC"""
         try:
             # Mark video as processing
             self.processing_videos[filename] = {
@@ -135,23 +133,39 @@ class PizzaCounter:
                 'start_time': datetime.now()
             }
             
-            # Insert video record vào DB
+            # Check if video already exists in DB
             video_id = None
             if self.db_available:
-                video_doc = {
-                    'filename': filename,
-                    'file_path': video_path,
-                    'status': 'processing',
-                    'uploaded_at': datetime.now(),
-                    'processed_at': None,
-                    'pizza_count': 0,
-                    'total_frames': 0,
-                    'processed_frames': 0
-                }
-                video_result = self.videos_collection.insert_one(video_doc)
-                video_id = video_result.inserted_id
+                existing_video = self.videos_collection.find_one({'filename': filename})
+                if existing_video:
+                    # Update existing video
+                    video_id = existing_video['_id']
+                    self.videos_collection.update_one(
+                        {'_id': video_id},
+                        {'$set': {
+                            'status': 'processing',
+                            'processed_at': None,
+                            'pizza_count': 0,
+                            'total_frames': 0,
+                            'processed_frames': 0
+                        }}
+                    )
+                else:
+                    # Insert new video record
+                    video_doc = {
+                        'filename': filename,
+                        'file_path': video_path,
+                        'status': 'processing',
+                        'uploaded_at': datetime.now(),
+                        'processed_at': None,
+                        'pizza_count': 0,
+                        'total_frames': 0,
+                        'processed_frames': 0
+                    }
+                    video_result = self.videos_collection.insert_one(video_doc)
+                    video_id = video_result.inserted_id
             
-            # SỬ DỤNG THUẬT TOÁN GỐC - TRACKING
+            # Process using original algorithm
             result = self.detect_and_count_pizzas_original(video_path, filename, progress_callback)
             
             # Update video record
@@ -183,7 +197,6 @@ class PizzaCounter:
             }
             
         except Exception as e:
-            # Mark as error
             if filename in self.processing_videos:
                 self.processing_videos[filename]['status'] = 'error'
                 self.processing_videos[filename]['error'] = str(e)
@@ -196,8 +209,8 @@ class PizzaCounter:
             
             return {'success': False, 'error': str(e)}
 
+
     def detect_and_count_pizzas_original(self, video_path, filename, progress_callback=None):
-        """THUẬT TOÁN GỐC - Sử dụng TRACKING để đếm chính xác"""
         cap = cv2.VideoCapture(video_path)
         if not cap.isOpened():
             raise Exception("Could not open video file")
@@ -215,28 +228,30 @@ class PizzaCounter:
             success, frame = cap.read()
             if not success:
                 break
-                
+            
             frame_count += 1
             
-            # Update progress
-            if progress_callback and frame_count % 30 == 0:
+            # Update progress every 10 frames
+            if progress_callback and frame_count % 10 == 0:
                 progress = (frame_count / total_frames) * 100
-                progress_callback(progress)
-                if filename in self.processing_videos:
-                    self.processing_videos[filename]['progress'] = progress
+                try:
+                    progress_callback(progress)
+                    if filename in self.processing_videos:
+                        self.processing_videos[filename]["progress"] = progress
+                except Exception as e:
+                    print(f"Progress callback error: {e}")
             
             # Skip frames for performance
             if frame_count % self.frame_skip != 0:
                 continue
                 
             try:
-                # QUAN TRỌNG: Sử dụng TRACKING thay vì detection đơn giản
                 results = self.model.track(
                     frame,
                     persist=True,
                     classes=self.classes_to_detect,
                     conf=self.confidence_threshold,
-                    tracker="bytetrack.yaml"  # Sử dụng ByteTrack
+                    tracker="bytetrack.yaml"
                 )
                 
                 if (results[0].boxes is not None and 
@@ -259,7 +274,7 @@ class PizzaCounter:
                             track.append((center_x, center_y, frame_count))
                             
                             # Keep only recent positions (last 2 seconds)
-                            if len(track) > 60:  # ~2 seconds at 30fps
+                            if len(track) > 60:
                                 track.pop(0)
                             
                             # Check if pizza has been "removed" based on movement pattern
@@ -286,6 +301,10 @@ class PizzaCounter:
                 print(f"Error in frame {frame_count}: {e}")
                 continue
         
+        # Final progress update
+        if progress_callback:
+            progress_callback(100)
+        
         cap.release()
         print(f"Video processing complete: {pizza_count} pizzas counted")
         
@@ -294,7 +313,8 @@ class PizzaCounter:
             'total_frames': total_frames,
             'processed_frames': frame_count,
             'detections': all_detections
-        }
+    }
+
 
     def is_pizza_removed_original(self, track):
         """Determine if pizza has been removed based on MOVEMENT PATTERN"""

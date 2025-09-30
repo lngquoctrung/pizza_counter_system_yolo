@@ -215,7 +215,7 @@ def display_video_stream_modal(filename):
                             frame_pil = Image.fromarray(annotated_frame_rgb)
                             
                             # Display frame with proper sizing
-                            frame_placeholder.image(frame_pil, width=800, use_column_width=False)
+                            frame_placeholder.image(frame_pil, width=800, use_container_width=False)
                             
                             # Display stats
                             stats_placeholder.markdown(f"""
@@ -228,14 +228,14 @@ def display_video_stream_modal(filename):
                             # Display original frame if tracking fails
                             frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                             frame_pil = Image.fromarray(frame_rgb)
-                            frame_placeholder.image(frame_pil, width=800, use_column_width=False)
+                            frame_placeholder.image(frame_pil, width=800, use_container_width=False)
                             stats_placeholder.error(f"Detection error: {str(e)}")
                     
                     else:
                         # Show original frame for skipped frames
                         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                         frame_pil = Image.fromarray(frame_rgb)
-                        frame_placeholder.image(frame_pil, width=800, use_column_width=False)
+                        frame_placeholder.image(frame_pil, width=800, use_container_width=False)
                     
                     # Control playback speed
                     time.sleep(1.0 / fps if fps > 0 else 0.033)
@@ -252,7 +252,7 @@ def display_video_stream_modal(filename):
             try:
                 thumbnail = extract_video_thumbnail(video_path)
                 if thumbnail:
-                    frame_placeholder.image(thumbnail, width=800, use_column_width=False)
+                    frame_placeholder.image(thumbnail, width=800, use_container_width=False)
                     total_detected = st.session_state.get(f"stream_pizza_count_{filename}", 0)
                     stats_placeholder.info(f"Click Start to begin detection stream | Total detected: {total_detected}")
                 else:
